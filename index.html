@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Fun</title>
+    
+    <!-- ספריות חובה כדי שה-JSX יעבוד בדפדפן -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;800&display=swap');
+        body { font-family: 'Assistant', sans-serif; margin: 0; padding: 0; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <!-- כאן מתחילה המעטפת של הקוד שלך -->
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        /**************************************************
+         * הדבק את כל תוכן קובץ ה-JSX שלך כאן למטה
+         * (ממש את הכל, מה-Import ועד ה-Export)
+         **************************************************/
+
+        // ... הקוד שלך כאן ...
+        // הערה: תמחק את שורות ה-import (כמו import React from 'react') כי הן כבר נטענו למעלה.
+
+
+
+// --- Constants ---
+
+const GRADES = [
+  { id: 1, label: "כיתה א׳", emoji: "🌟", color: "#FF6B6B" },
+  { id: 2, label: "כיתה ב׳", emoji: "🚀", color: "#4ECDC4" },
+  { id: 3, label: "כיתה ג׳", emoji: "⚡", color: "#FFE66D" },
+  { id: 4, label: "כיתה ד׳", emoji: "🔥", color: "#A78BFA" },
+  { id: 5, label: "כיתה ה׳", emoji: "💎", color: "#F472B6" },
+  { id: 6, label: "כיתה ו׳", emoji: "👑", color: "#34D399" },
+];
+
+const EXERCISE_TYPES = [
+  { id: "abc", label: "לימוד אותיות / איות", emoji: "🔤", description: "ABC & Spelling" },
+  { id: "vocab", label: "אוצר מילים", emoji: "🧩", description: "Vocabulary Quiz" },
+  { id: "sentences", label: "בניית משפטים", emoji: "📝", description: "Build Sentences" },
+];
+
+// --- Big Data Store ---
+
+const RAW_DATA = {
+  1: {
+    abc: [
+      { letter: "A", word: "Apple", hebWord: "תפוח", emoji: "🍎" },
+      { letter: "B", word: "Ball", hebWord: "כדור", emoji: "⚽" },
+      { letter: "C", word: "Cat", hebWord: "חתול", emoji: "🐱" },
+      { letter: "D", word: "Dog", hebWord: "כלב", emoji: "🐶" },
+      { letter: "E", word: "Egg", hebWord: "ביצה", emoji: "🥚" },
+      { letter: "F", word: "Fish", hebWord: "דג", emoji: "🐟" },
+      { letter: "G", word: "Goat", hebWord: "עז", emoji: "🐐" },
+      { letter: "H", word: "Hat", hebWord: "כובע", emoji: "🎩" },
+    ],
+    vocab: [
+      { q: "Red", options: ["אדום", "כחול", "ירוק", "צהוב"], a: "אדום" },
+      { q: "Blue", options: ["אדום", "כחול", "שחור", "לבן"], a: "כחול" },
+      { q: "One", options: ["אחת", "שתיים", "שלוש", "ארבע"], a: "אחת" },
+      { q: "Five", options: ["שש", "שבע", "חמש", "תשע"], a: "חמש" },
+      { q: "Sun", options: ["ירח", "שמש", "כוכב", "ענן"], a: "שמש" },
+      { q: "Mom", options: ["אבא", "אמא", "אח", "אחות"], a: "אמא" },
+      { q: "Milk", options: ["מים", "מיץ", "חלב", "לחם"], a: "חלב" },
+    ],
+    sentences: [
+      { hebrew: "זה חתול", english: "It is a cat", parts: ["It", "is", "a", "cat"] },
+      { hebrew: "אני רואה כלב", english: "I see a dog", parts: ["I", "see", "a", "dog"] },
+      { hebrew: "התפוח אדום", english: "The apple is red", parts: ["The", "apple", "is", "red"] },
+      { hebrew: "זה כדור גדול", english: "It is a big ball", parts: ["It", "is", "a", "big", "ball"] },
+    ]
+  },
+  2: {
+    abc: [
+      { letter: "I", word: "Ice", hebWord: "קרח", emoji: "🧊" },
+      { letter: "J", word: "Jump", hebWord: "לקפוץ", emoji: "🦘" },
+      { letter: "K", word: "King", hebWord: "מלך", emoji: "👑" },
+      { letter: "L", word: "Lion", hebWord: "אריה", emoji: "🦁" },
+    ],
+    vocab: [
+      { q: "Brother", options: ["אח", "אחות", "דוד", "סבא"], a: "אח" },
+      { q: "Hand", options: ["רגל", "יד", "ראש", "עין"], a: "יד" },
+      { q: "Eyes", options: ["אוזניים", "עיניים", "שיניים", "אף"], a: "עיניים" },
+      { q: "Book", options: ["ספר", "מחברת", "עיפרון", "תיק"], a: "ספר" },
+      { q: "Chair", options: ["שולחן", "כיסא", "מיטה", "דלת"], a: "כיסא" },
+      { q: "School", options: ["בית", "בית ספר", "גינה", "חנות"], a: "בית ספר" },
+    ],
+    sentences: [
+      { hebrew: "יש לי אחות", english: "I have a sister", parts: ["I", "have", "a", "sister"] },
+      { hebrew: "זה הספר שלי", english: "This is my book", parts: ["This", "is", "my", "book"] },
+      { hebrew: "השמיים כחולים היום", english: "The sky is blue today", parts: ["The", "sky", "is", "blue", "today"] },
+      { hebrew: "אני אוהב בננות", english: "I like bananas", parts: ["I", "like", "bananas"] },
+    ]
+  },
+  3: {
+    abc: [
+      { letter: "M", word: "Moon", hebWord: "ירח", emoji: "🌙" },
+      { letter: "N", word: "Night", hebWord: "לילה", emoji: "🌃" },
+      { letter: "O", word: "Orange", hebWord: "כתום", emoji: "🍊" },
+    ],
+    vocab: [
+      { q: "Kitchen", options: ["סלון", "מטבח", "מקלחת", "חדר"], a: "מטבח" },
+      { q: "Window", options: ["דלת", "חלון", "קיר", "תקרה"], a: "חלון" },
+      { q: "Breakfast", options: ["ארוחת בוקר", "ארוחת צהריים", "ערב", "בוקר"], a: "ארוחת בוקר" },
+      { q: "Elephant", options: ["פיל", "נמר", "דוב", "קוף"], a: "פיל" },
+      { q: "Bread", options: ["גבינה", "לחם", "ביצה", "אורז"], a: "לחם" },
+      { q: "Winter", options: ["קיץ", "חורף", "סתיו", "אביב"], a: "חורף" },
+    ],
+    sentences: [
+      { hebrew: "אני הולך לישון", english: "I go to sleep", parts: ["I", "go", "to", "sleep"] },
+      { hebrew: "הפיל חיה גדולה", english: "The elephant is a big animal", parts: ["The", "elephant", "is", "a", "big", "animal"] },
+      { hebrew: "איפה המטבח?", english: "Where is the kitchen?", parts: ["Where", "is", "the", "kitchen"] },
+      { hebrew: "קר בחורף", english: "It is cold in winter", parts: ["It", "is", "cold", "in", "winter"] },
+      { hebrew: "אני אוכל ארוחת בוקר", english: "I eat breakfast", parts: ["I", "eat", "breakfast"] },
+    ]
+  },
+  4: {
+    abc: [
+      { letter: "P", word: "Pilot", hebWord: "טייס", emoji: "👨‍✈️" },
+      { letter: "Q", word: "Quiet", hebWord: "שקט", emoji: "🤫" },
+    ],
+    vocab: [
+      { q: "Doctor", options: ["מורה", "רופא", "שוטר", "טבח"], a: "רופא" },
+      { q: "Beautiful", options: ["מכוער", "יפה", "חכם", "חזק"], a: "יפה" },
+      { q: "Fast", options: ["איטי", "מהיר", "גבוה", "נמוך"], a: "מהיר" },
+      { q: "Strong", options: ["חלש", "חזק", "עייף", "רעב"], a: "חזק" },
+      { q: "Swimming", options: ["ריצה", "שחייה", "ריקוד", "קפיצה"], a: "שחייה" },
+      { q: "Teacher", options: ["תלמיד", "מורה", "מנהל", "הורה"], a: "מורה" },
+    ],
+    sentences: [
+      { hebrew: "אבא שלי רופא", english: "My father is a doctor", parts: ["My", "father", "is", "a", "doctor"] },
+      { hebrew: "הוא רץ מהר מאוד", english: "He runs very fast", parts: ["He", "runs", "very", "fast"] },
+      { hebrew: "אני רוצה לשחות בים", english: "I want to swim in the sea", parts: ["I", "want", "to", "swim", "in", "the", "sea"] },
+      { hebrew: "הפרח הזה יפה", english: "This flower is beautiful", parts: ["This", "flower", "is", "beautiful"] },
+    ]
+  },
+  5: {
+    abc: [
+      { letter: "S", word: "Space", hebWord: "חלל", emoji: "🚀" },
+      { letter: "T", word: "Travel", hebWord: "לטייל", emoji: "✈️" },
+    ],
+    vocab: [
+      { q: "Important", options: ["חשוב", "מיותר", "מעניין", "משעמם"], a: "חשוב" },
+      { q: "Environment", options: ["טבע", "סביבה", "חלל", "עולם"], a: "סביבה" },
+      { q: "Computer", options: ["מחשב", "טלפון", "טלוויזיה", "רדיו"], a: "מחשב" },
+      { q: "Information", options: ["ידע", "מידע", "סוד", "סיפור"], a: "מידע" },
+      { q: "Success", options: ["כישלון", "הצלחה", "ניצחון", "הפסד"], a: "הצלחה" },
+      { q: "Health", options: ["מחלה", "בריאות", "כושר", "אושר"], a: "בריאות" },
+    ],
+    sentences: [
+      { hebrew: "בריאות היא דבר חשוב", english: "Health is an important thing", parts: ["Health", "is", "an", "important", "thing"] },
+      { hebrew: "אני משתמש במחשב כל יום", english: "I use the computer every day", parts: ["I", "use", "the", "computer", "every", "day"] },
+      { hebrew: "עלינו לשמור על הסביבה", english: "We must protect the environment", parts: ["We", "must", "protect", "the", "environment"] },
+      { hebrew: "יש הרבה מידע באינטרנט", english: "There is a lot of information on the internet", parts: ["There", "is", "a", "lot", "of", "information", "on", "the", "internet"] },
+    ]
+  },
+  6: {
+    abc: [
+      { letter: "V", word: "Victory", hebWord: "ניצחון", emoji: "✌️" },
+      { letter: "W", word: "World", hebWord: "עולם", emoji: "🌍" },
+    ],
+    vocab: [
+      { q: "Responsibility", options: ["אחריות", "חובה", "זכות", "בחירה"], a: "אחריות" },
+      { q: "Government", options: ["מדינה", "ממשלה", "צבא", "משטרה"], a: "ממשלה" },
+      { q: "Difference", options: ["דמיון", "הבדל", "שינוי", "קשר"], a: "הבדל" },
+      { q: "Experience", options: ["זיכרון", "ניסיון", "חלום", "מחשבה"], a: "ניסיון" },
+      { q: "Culture", options: ["אמנות", "תרבות", "מסורת", "שפה"], a: "תרבות" },
+      { q: "Challenge", options: ["קושי", "אתגר", "בעיה", "פתרון"], a: "אתגר" },
+    ],
+    sentences: [
+      { hebrew: "לכל אדם יש אחריות", english: "Every person has responsibility", parts: ["Every", "person", "has", "responsibility"] },
+      { hebrew: "זה היה אתגר גדול עבורי", english: "It was a big challenge for me", parts: ["It", "was", "a", "big", "challenge", "for", "me"] },
+      { hebrew: "אני רוצה ללמוד על תרבויות אחרות", english: "I want to learn about other cultures", parts: ["I", "want", "to", "learn", "about", "other", "cultures"] },
+      { hebrew: "הממשלה צריכה לעזור לאנשים", english: "The government should help people", parts: ["The", "government", "should", "help", "people"] },
+      { hebrew: "אם תנסה תצליח בסוף", english: "If you try you will succeed in the end", parts: ["If", "you", "try", "you", "will", "succeed", "in", "the", "end"] },
+    ]
+  }
+};
+
+// --- Utilities ---
+
+const shuffle = (array) => [...array].sort(() => Math.random() - 0.5);
+
+const speak = (text) => {
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'en-US';
+  utterance.rate = 0.85;
+  window.speechSynthesis.speak(utterance);
+};
+
+const playSound = (type) => {
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const osc = ctx.createOscillator();
+  const g = ctx.createGain();
+  osc.connect(g);
+  g.connect(ctx.destination);
+  
+  if (type === 'correct') {
+    osc.frequency.setValueAtTime(600, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.1);
+    g.gain.setValueAtTime(0.1, ctx.currentTime);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.3);
+  } else if (type === 'wrong') {
+    osc.frequency.setValueAtTime(200, ctx.currentTime);
+    g.gain.setValueAtTime(0.1, ctx.currentTime);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.3);
+  } else if (type === 'pop') {
+    osc.frequency.setValueAtTime(800, ctx.currentTime);
+    g.gain.setValueAtTime(0.05, ctx.currentTime);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.1);
+  }
+};
+
+const ProgressBar = ({ progress, color = "bg-indigo-500" }) => (
+  <div className="w-full bg-gray-200 rounded-full h-3 mb-6 overflow-hidden">
+    <div 
+      className={`${color} h-full transition-all duration-500`}
+      style={{ width: `${progress}%` }}
+    />
+  </div>
+);
+
+// --- Main App ---
+
+const App = () => {
+  const [screen, setScreen] = useState("welcome"); 
+  const [selectedGrade, setSelectedGrade] = useState(null);
+  const [selectedExercise, setSelectedExercise] = useState(null);
+  const [sessionData, setSessionData] = useState([]); 
+  const [score, setScore] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [feedback, setFeedback] = useState(null);
+  
+  // States for sentence building
+  const [sentenceParts, setSentenceParts] = useState([]);
+  const [shuffledBank, setShuffledBank] = useState([]);
+
+  const currentItem = sessionData[currentIndex];
+
+  // Effect to shuffle word bank whenever current item changes in sentences mode
+  useEffect(() => {
+    if (selectedExercise === 'sentences' && currentItem) {
+      setShuffledBank(shuffle(currentItem.parts));
+      setSentenceParts([]);
+    }
+  }, [currentIndex, currentItem, selectedExercise]);
+
+  const startExercise = (gradeId, type) => {
+    playSound('pop');
+    setSelectedExercise(type);
+    
+    let dataToShuffle = RAW_DATA[gradeId][type] || [];
+    const shuffledSession = shuffle(dataToShuffle);
+    setSessionData(shuffledSession);
+    
+    setCurrentIndex(0);
+    setScore(0);
+    setSentenceParts([]);
+    
+    if (type === 'abc') setScreen("playing_abc");
+    else if (type === 'vocab') setScreen("playing_vocab");
+    else if (type === 'sentences') setScreen("playing_sentences");
+  };
+
+  const handleBack = () => {
+    playSound('pop');
+    if (screen === "grade") setScreen("welcome");
+    else if (screen === "exercise") setScreen("grade");
+    else if (screen.startsWith("playing")) setScreen("exercise");
+    else if (screen === "result") setScreen("exercise");
+  };
+
+  const handleVocabAnswer = (isCorrect) => {
+    if (isCorrect) {
+      setScore(prev => prev + 10);
+      setFeedback('correct');
+      playSound('correct');
+      speak(currentItem.q);
+    } else {
+      setFeedback('wrong');
+      playSound('wrong');
+    }
+
+    setTimeout(() => {
+      setFeedback(null);
+      if (currentIndex < sessionData.length - 1) {
+        setCurrentIndex(prev => prev + 1);
+      } else {
+        setScreen("result");
+      }
+    }, 1200);
+  };
+
+  const handleSentenceCheck = () => {
+    // Join the words the user picked and compare with the goal string
+    if (sentenceParts.join(" ") === currentItem.english) {
+      setScore(prev => prev + 20);
+      setFeedback('correct');
+      playSound('correct');
+      speak(currentItem.english);
+      setTimeout(() => {
+        setFeedback(null);
+        if (currentIndex < sessionData.length - 1) {
+          setCurrentIndex(prev => prev + 1);
+        } else {
+          setScreen("result");
+        }
+      }, 1500);
+    } else {
+      setFeedback('wrong');
+      playSound('wrong');
+      setTimeout(() => setFeedback(null), 800);
+    }
+  };
+
+  const resetToWelcome = () => {
+    playSound('pop');
+    setScore(0);
+    setCurrentIndex(0);
+    setSentenceParts([]);
+    setFeedback(null);
+    setScreen("welcome");
+  };
+
+  return (
+    <div className="min-h-screen bg-[#F8FAFC] font-sans text-right p-4 select-none" dir="rtl">
+      <div className="max-w-md mx-auto">
+        
+        {/* Navigation Bar */}
+        <header className="flex justify-between items-center py-4 mb-4">
+          <div className="text-xl font-black text-indigo-600 tracking-tight">
+            ENGLISH<span className="text-orange-500">FUN</span>
+          </div>
+          <div className="flex gap-2">
+             {screen !== "welcome" && (
+                <button 
+                  onClick={handleBack} 
+                  className="bg-white px-4 py-2 rounded-xl shadow-sm text-sm font-bold text-gray-600 hover:bg-gray-50 border border-gray-100"
+                >
+                  ↩️ חזרה
+                </button>
+             )}
+             {screen !== "welcome" && (
+                <button 
+                  onClick={resetToWelcome} 
+                  className="bg-white px-4 py-2 rounded-xl shadow-sm text-sm font-bold text-gray-400 hover:bg-gray-50"
+                >
+                  🏠 בית
+                </button>
+             )}
+          </div>
+        </header>
+
+        {/* Welcome Screen */}
+        {screen === "welcome" && (
+          <div className="text-center py-12 animate-in fade-in zoom-in duration-500">
+            <div className="text-8xl mb-8">🐯</div>
+            <h1 className="text-4xl font-black text-gray-800 mb-4">היי חברים!</h1>
+            <p className="text-gray-500 mb-10 text-lg">מוכנים ללמוד אנגלית בכיף?</p>
+            <button 
+              onClick={() => { playSound('pop'); setScreen("grade"); }}
+              className="w-full bg-indigo-600 text-white py-5 rounded-3xl text-2xl font-black shadow-[0_6px_0_rgb(49,46,129)] active:translate-y-1 active:shadow-none transition-all"
+            >
+              קדימה, בואו נתחיל!
+            </button>
+          </div>
+        )}
+
+        {/* Grade Selection */}
+        {screen === "grade" && (
+          <div className="animate-in slide-in-from-left duration-300">
+            <h2 className="text-2xl font-black mb-6 text-center text-gray-800">באיזה כיתה אתם?</h2>
+            <div className="grid grid-cols-2 gap-4">
+              {GRADES.map(grade => (
+                <button
+                  key={grade.id}
+                  onClick={() => { playSound('pop'); setSelectedGrade(grade); setScreen("exercise"); }}
+                  className="p-6 rounded-3xl bg-white shadow-sm border-2 border-transparent hover:border-indigo-200 transition-all flex flex-col items-center gap-2"
+                  style={{ borderBottomColor: grade.color, borderBottomWidth: '6px' }}
+                >
+                  <span className="text-4xl">{grade.emoji}</span>
+                  <span className="font-bold text-gray-700">{grade.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Exercise Selection */}
+        {screen === "exercise" && (
+          <div className="animate-in fade-in duration-300">
+            <div className="text-center mb-8">
+              <div className="inline-block bg-indigo-100 text-indigo-700 px-4 py-1 rounded-full text-sm font-bold mb-2">
+                {selectedGrade?.label}
+              </div>
+              <h2 className="text-2xl font-black text-gray-800">מה נלמד היום?</h2>
+            </div>
+            <div className="space-y-4">
+              {EXERCISE_TYPES.map(ex => (
+                <button
+                  key={ex.id}
+                  onClick={() => startExercise(selectedGrade.id, ex.id)}
+                  className="w-full p-6 bg-white rounded-3xl shadow-sm border-2 border-gray-100 flex items-center gap-4 hover:border-indigo-400 transition-all"
+                >
+                  <div className="w-14 h-14 rounded-2xl bg-indigo-50 flex items-center justify-center text-2xl">
+                    {ex.emoji}
+                  </div>
+                  <div className="text-right flex-1">
+                    <div className="font-black text-lg text-gray-800">{ex.label}</div>
+                    <div className="text-xs text-gray-400">{ex.description}</div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Game: ABC */}
+        {screen === "playing_abc" && currentItem && (
+          <div className="animate-in zoom-in duration-300">
+            <ProgressBar progress={((currentIndex + 1) / sessionData.length) * 100} color="bg-orange-400" />
+            <div className="bg-white rounded-[40px] p-8 shadow-xl border-b-8 border-orange-100 text-center">
+              
+              <div className="flex flex-col items-center mb-6">
+                <h3 className="text-[100px] font-black text-indigo-600 leading-none">
+                  {currentItem.letter}
+                </h3>
+                <button 
+                  onClick={() => speak(currentItem.letter)}
+                  className="mt-2 bg-indigo-50 text-indigo-600 px-4 py-2 rounded-full font-bold flex items-center gap-2"
+                >
+                  <span>🔊 שמע אות</span>
+                </button>
+              </div>
+
+              <div 
+                className="bg-orange-50 rounded-2xl p-6 flex items-center justify-around mb-8 cursor-pointer active:scale-95 transition-transform"
+                onClick={() => speak(currentItem.word)}
+              >
+                <div className="text-6xl">{currentItem.emoji}</div>
+                <div className="text-right">
+                  <div className="text-3xl font-black text-gray-800 flex items-center gap-2">
+                    {currentItem.word}
+                    <span className="text-xl">🔊</span>
+                  </div>
+                  <div className="text-lg font-bold text-orange-600">{currentItem.hebWord}</div>
+                </div>
+              </div>
+
+              <button 
+                onClick={() => {
+                  playSound('pop');
+                  if (currentIndex < sessionData.length - 1) setCurrentIndex(prev => prev + 1);
+                  else setScreen("result");
+                }}
+                className="w-full py-4 bg-orange-500 text-white rounded-2xl font-black text-xl"
+              >
+                {currentIndex === sessionData.length - 1 ? "סיימתי!" : "הבא"}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Game: Vocab */}
+        {screen === "playing_vocab" && currentItem && (
+          <div className="animate-in fade-in duration-300">
+            <ProgressBar progress={((currentIndex + 1) / sessionData.length) * 100} color="bg-pink-500" />
+            <div className="bg-white p-8 rounded-[40px] shadow-lg text-center relative overflow-hidden">
+              {feedback && (
+                <div className={`absolute inset-0 flex items-center justify-center z-10 ${feedback === 'correct' ? 'bg-green-500/90' : 'bg-red-500/90'}`}>
+                  <div className="text-white text-4xl font-black animate-bounce">
+                    {feedback === 'correct' ? 'מעולה! 🌟' : 'נסו שוב 🤔'}
+                  </div>
+                </div>
+              )}
+              <div className="text-gray-400 font-bold mb-2">איך אומרים בעברית?</div>
+              <div className="flex justify-center items-center gap-4 mb-8">
+                <h3 className="text-5xl font-black text-gray-800">{currentItem.q}</h3>
+                <button onClick={() => speak(currentItem.q)} className="bg-indigo-50 p-2 rounded-full text-xl">🔊</button>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                {currentItem.options.map((opt, i) => (
+                  <button
+                    key={i}
+                    onClick={() => handleVocabAnswer(opt === currentItem.a)}
+                    className="py-5 rounded-2xl border-2 border-gray-100 font-bold text-xl text-gray-700 hover:border-pink-300"
+                  >
+                    {opt}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Game: Sentences */}
+        {screen === "playing_sentences" && currentItem && (
+          <div className="animate-in slide-in-from-bottom duration-300">
+            <ProgressBar progress={((currentIndex + 1) / sessionData.length) * 100} color="bg-blue-500" />
+            <div className="bg-white p-6 rounded-[40px] shadow-lg text-center relative overflow-hidden">
+              {feedback && (
+                <div className={`absolute inset-0 flex items-center justify-center z-10 ${feedback === 'correct' ? 'bg-green-500/90' : 'bg-red-500/90'}`}>
+                  <div className="text-white text-4xl font-black animate-bounce">
+                    {feedback === 'correct' ? 'מעולה! 🌟' : 'נסו שוב 🤔'}
+                  </div>
+                </div>
+              )}
+              <div className="text-gray-400 font-bold mb-1 text-sm">תרגמו לאנגלית:</div>
+              <h3 className="text-2xl font-black text-gray-800 mb-6">{currentItem.hebrew}</h3>
+              
+              {/* Drop Area */}
+              <div 
+                className="min-h-[70px] bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 mb-6 p-3 flex flex-row flex-wrap gap-2 justify-center items-center"
+                style={{ direction: 'ltr' }} 
+              >
+                {sentenceParts.length === 0 && <span className="text-gray-300 text-sm" style={{ direction: 'rtl' }}>לחצו על המילים למטה...</span>}
+                {sentenceParts.map((word, idx) => (
+                  <button 
+                    key={idx}
+                    onClick={() => setSentenceParts(sentenceParts.filter((_, i) => i !== idx))}
+                    className="bg-blue-500 text-white px-4 py-2 rounded-xl font-bold shadow-sm animate-in zoom-in duration-200"
+                  >
+                    {word}
+                  </button>
+                ))}
+              </div>
+
+              {/* Word Bank - SHUFFLED */}
+              <div className="flex flex-wrap gap-2 justify-center mb-8" style={{ direction: 'ltr' }}>
+                {shuffledBank.map((word, idx) => {
+                  const usedCount = sentenceParts.filter(w => w === word).length;
+                  const totalCount = currentItem.parts.filter(w => w === word).length;
+                  const isUsed = usedCount >= totalCount;
+
+                  return (
+                    <button
+                      key={idx}
+                      disabled={isUsed}
+                      onClick={() => { playSound('pop'); setSentenceParts([...sentenceParts, word]); }}
+                      className={`px-4 py-2 rounded-xl font-bold border-2 transition-all ${isUsed ? 'opacity-30 bg-gray-100 border-gray-100' : 'border-blue-100 text-blue-600 bg-white hover:border-blue-400'}`}
+                    >
+                      {word}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="flex gap-3">
+                 <button
+                  onClick={handleSentenceCheck}
+                  className="flex-1 py-4 bg-green-500 text-white font-black rounded-2xl text-xl shadow-[0_4px_0_rgb(21,128,61)] active:translate-y-1 active:shadow-none transition-all"
+                >
+                  בדיקה ✓
+                </button>
+                <button 
+                  onClick={() => speak(currentItem.english)}
+                  className="px-6 bg-indigo-50 text-indigo-600 rounded-2xl font-bold"
+                >
+                  🔊
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Result Screen */}
+        {screen === "result" && (
+          <div className="text-center py-12 animate-in zoom-in duration-500">
+            <div className="text-9xl mb-6">🏆</div>
+            <h2 className="text-4xl font-black text-gray-800 mb-2">אלופים!</h2>
+            <p className="text-gray-500 mb-10 text-xl">סיימתם את המשימה בהצלחה!</p>
+            
+            <div className="bg-white p-8 rounded-[40px] shadow-xl mb-12 inline-block px-12 border-b-8 border-indigo-50">
+              <div className="text-gray-400 font-bold mb-1">הניקוד שלכם</div>
+              <div className="text-6xl font-black text-indigo-600">{score}</div>
+            </div>
+
+            <button 
+              onClick={() => setScreen("exercise")}
+              className="w-full bg-indigo-600 text-white py-5 rounded-3xl text-2xl font-black shadow-[0_6px_0_rgb(49,46,129)] active:translate-y-1 active:shadow-none transition-all"
+            >
+              בחירת תרגיל נוסף 🔄
+            </button>
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+};
+
+
+        /**************************************************
+         * סוף הקוד שלך
+         **************************************************/
+
+        // שורת הפקודה שתפעיל את האפליקציה בתוך ה-HTML
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
+
+
+
+
